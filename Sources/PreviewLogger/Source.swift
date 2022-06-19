@@ -2,17 +2,21 @@ import SwiftUI
 import os.log
 
 public enum PreviewLog {
-  
-  public static func debug(_ objects: Any...) {
-    let string = objects.map { "\($0)" }.joined(separator: ", ")
-    LogStorage.shared.logs.append(Log.init(type: .debug, body: string))
-  }
-   
-  public static func error(_ objects: Any...) {
-    let string = objects.map { "\($0)" }.joined(separator: ", ")
-    LogStorage.shared.logs.append(Log.init(type: .error, body: string))
+
+  @inline(__always)
+  private static func send(_ logObject: OSLog = .default, _ type: OSLogType, _ message: String) {
+    os_log(type, log: logObject, "%{public}@", message)
+    LogStorage.shared.logs.append(Log.init(type: .error, body: message))
   }
   
+  public static func debug(_ logObject: OSLog, _ message: String) {
+    send(logObject, .debug, message)
+  }
+  
+  public static func error(_ logObject: OSLog, _ message: String) {
+    send(logObject, .error, message)
+  }
+      
 }
 
 struct Log: Identifiable {
@@ -61,10 +65,8 @@ public struct LogView: View {
             
             Text(Static.formatter.string(from: log.date))
               .font(.system(size: 9))
-              .foregroundColor(.black.opacity(0.8))
             Text("\(log.body)")
               .font(.system(size: 9))
-              .foregroundColor(.black)
             
             Spacer()
             

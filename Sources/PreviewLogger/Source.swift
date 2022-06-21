@@ -103,35 +103,49 @@ public struct LogView: View {
   }
 
   public var body: some View {
-    ScrollView {
-      VStack {
-        ForEach(storage.logs.reversed()) { log in
-
-          HStack {
-
-            circle(type: log.type)
-
-            Text(Static.formatter.string(from: log.date))
-              .font(.system(size: 9))
-
-            Text(log.subsystem)
-              .font(.system(size: 9))
-
-            Text(log.category)
-              .font(.system(size: 9))
-
-            Text("\(log.body)")
-              .font(.system(size: 9))
-
-            Spacer()
-
+    VStack {
+      HStack {
+        Spacer()
+        Button {
+          storage.clear()
+        } label: {
+          Image(systemName: "trash")
+            .resizable()
+            .aspectRatio(contentMode: .fit)
+            .frame(width: 20, height: 20)
+            
+        }
+      }
+      .padding(.horizontal)
+      ScrollView {
+        VStack {
+          ForEach(storage.logs.reversed()) { log in
+            
+            HStack {
+              
+              circle(type: log.type)
+              
+              Text(Static.formatter.string(from: log.date))
+                .font(.system(size: 9))
+              
+              Text(log.subsystem)
+                .font(.system(size: 9))
+              
+              Text(log.category)
+                .font(.system(size: 9))
+              
+              Text("\(log.body)")
+                .font(.system(size: 9))
+              
+              Spacer()
+              
+            }
+            .padding(.vertical, 2)
+            .padding(.horizontal)
           }
-          .padding(.vertical, 2)
-          .padding(.horizontal)
         }
       }
     }
-
   }
 
   @ViewBuilder

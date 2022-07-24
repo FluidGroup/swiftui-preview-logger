@@ -59,6 +59,7 @@ struct Record: Identifiable {
 final class LogStorage: ObservableObject {
 
   private let lock = NSLock()
+  private let limit: Int = 100
 
   static let shared = LogStorage()
 
@@ -70,6 +71,10 @@ final class LogStorage: ObservableObject {
       lock.unlock()
     }
     logs.append(record)
+
+    if logs.count > limit {
+      logs = logs.suffix(limit)
+    }
   }
 
   func clear() {
@@ -113,37 +118,49 @@ public struct LogView: View {
             .resizable()
             .aspectRatio(contentMode: .fit)
             .frame(width: 20, height: 20)
-            
         }
       }
       .padding(.horizontal)
+      
       ScrollView {
         VStack {
           ForEach(storage.logs.reversed()) { log in
-            
-            HStack {
-              
-              circle(type: log.type)
-              
-              Text(Static.formatter.string(from: log.date))
-                .font(.system(size: 9))
-              
-              Text(log.subsystem)
-                .font(.system(size: 9))
-              
-              Text(log.category)
-                .font(.system(size: 9))
-              
-              Text("\(log.body)")
-                .font(.system(size: 9))
-              
-              Spacer()
+
+            VStack(alignment: .leading) {
+
+              HStack {
+                circle(type: log.type)
+
+                Text(Static.formatter.string(from: log.date))
+                  .font(.system(size: 9))
+                  .opacity(0.8)
+                
+                Text(log.subsystem)
+                  .font(.system(size: 9))
+                  .opacity(0.8)
+                
+                Text(log.category)
+                  .font(.system(size: 9))
+                  .opacity(0.8)
+                
+                Spacer()
+              }
+
+              HStack {
+
+                Text("\(log.body)")
+                  .font(.system(size: 9))
+
+                Spacer()
+              }
               
             }
             .padding(.vertical, 2)
             .padding(.horizontal)
           }
         }
+        .animation(.interactiveSpring(), value: storage.logs.count)
+        
       }
     }
   }

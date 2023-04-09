@@ -1,3 +1,5 @@
+> From Xcode 14.3, SwiftUI Preview supports to print in console.
+
 # swiftui-preview-logger
 
 A component that displays log in App.
